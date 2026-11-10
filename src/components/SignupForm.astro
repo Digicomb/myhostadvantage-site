@@ -1,0 +1,151 @@
+---
+import { plan } from '../plans';
+---
+
+<form class="contact-form" id="signup-form" novalidate>
+	<div class="field-row">
+		<div class="field">
+			<label for="sf-name">Your name <span aria-hidden="true">*</span></label>
+			<input id="sf-name" name="name" type="text" autocomplete="name" maxlength="120" required />
+		</div>
+		<div class="field">
+			<label for="sf-email">Email <span aria-hidden="true">*</span></label>
+			<input id="sf-email" name="email" type="email" autocomplete="email" maxlength="254" required />
+		</div>
+	</div>
+	<div class="field-row">
+		<div class="field">
+			<label for="sf-business">Business name <span aria-hidden="true">*</span></label>
+			<input id="sf-business" name="business" type="text" autocomplete="organization" maxlength="120" required />
+		</div>
+		<div class="field">
+			<label for="sf-domain">Domain name <span class="optional">(optional)</span></label>
+			<input
+				id="sf-domain"
+				name="domain"
+				type="text"
+				inputmode="url"
+				autocapitalize="off"
+				spellcheck="false"
+				maxlength="253"
+				placeholder="yourbusiness.com"
+			/>
+		</div>
+	</div>
+	<fieldset class="interval-choice">
+		<legend>Billing</legend>
+		<label>
+			<input type="radio" name="interval" value="month" checked />
+			<span><strong>Monthly</strong> ${plan.monthly} per month</span>
+		</label>
+		<label>
+			<input type="radio" name="interval" value="year" />
+			<span><strong>Yearly</strong> ${plan.yearly} per year <em>2 months free</em></span>
+		</label>
+	</fieldset>
+
+	<!-- Spam trap: hidden from people, often filled in by bots. -->
+	<div class="hp" aria-hidden="true">
+		<label for="sf-website">Website</label>
+		<input id="sf-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+	</div>
+
+	<button class="btn btn-primary" type="submit">Continue to secure checkout</button>
+	<p class="form-consent">
+		Payment is handled securely by Stripe. Cancel any time. See our <a href="/privacy/">privacy policy</a>.
+	</p>
+	<p class="form-status" role="status" aria-live="polite"></p>
+</form>
+
+<script>
+	import { FUNCTIONS_URL } from '../config';
+
+	declare global {
+		interface Window {
+			gtag?: (...args: unknown[]) => void;
+		}
+	}
+
+	const form = document.getElementById('signup-form') as HTMLFormElement;
+	const status = form.querySelector('.form-status') as HTMLParagraphElement;
+	const button = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+	const domainPattern = /^(?=.{4,253}$)([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/;
+
+	const setStatus = (message: string, kind: 'error' | 'success' | '') => {
+		status.textContent = message;
+		status.dataset.kind = kind;
+	};
+
+	// The pricing card's monthly/yearly toggle carries over to the form.
+	document.addEventListener('mha:choose-interval', (event) => {
+		const { interval } = (event as CustomEvent<{ interval: string }>).detail;
+		const radio = form.querySelector<HTMLInputElement>(`input[name="interval"][value="${interval}"]`);
+		if (radio) radio.checked = true;
+	});
+
+	// Accept "https://www.Example.com/" and send "example.com".
+	const normalizeDomain = (raw: string) =>
+		raw
+			.trim()
+			.toLowerCase()
+			.replace(/^https?:\/\//, '')
+			.replace(/^www\./, '')
+			.replace(/[/?#].*$/, '');
+
+	form.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		const data = new FormData(form);
+		const value = (key: string) => String(data.get(key) ?? '').trim();
+
+		// Bots fill the hidden field; drop the request quietly.
+		if (value('website')) {
+			form.reset();
+			return;
+		}
+
+		for (const name of ['name', 'email', 'business']) {
+			const input = form.elements.namedItem(name) as HTMLInputElement;
+			if (!value(name) || !input.checkValidity()) {
+				const label = form.querySelector(`label[for="${input.id}"]`)?.firstChild?.textContent?.trim();
+				setStatus(name === 'email' ? 'Please enter a valid email address.' : `Please fill in "${label}".`, 'error');
+				input.focus();
+				return;
+			}
+		}
+
+		const domain = value('domain') ? normalizeDomain(value('domain')) : '';
+		if (domain && !domainPattern.test(domain)) {
+			setStatus('Please enter a domain name like yourbusiness.com, or leave it blank.', 'error');
+			(form.elements.namedItem('domain') as HTMLInputElement).focus();
+			return;
+		}
+
+		button.disabled = true;
+		setStatus('Taking you to checkout…', '');
+
+		try {
+			const response = await fetch(`${FUNCTIONS_URL}/mha-create-checkout`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					name: value('name'),
+					email: value('email'),
+					business: value('business'),
+					domain: domain || null,
+					interval: value('interval'),
+				}),
+			});
+			const result = await response.json().catch(() => ({}));
+			if (!response.ok || !result.url) {
+				throw new Error(result.error ?? `Checkout failed: ${response.status}`);
+			}
+
+			window.gtag?.('event', 'begin_checkout', { interval: value('interval') });
+			window.location.href = result.url;
+		} catch (error) {
+			console.error(error);
+			setStatus('Something went wrong starting checkout. Please try again in a moment.', 'error');
+			button.disabled = false;
+		}
+	});
+</script>

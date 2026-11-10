@@ -1,0 +1,107 @@
+---
+import Base from '../../layouts/Base.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+---
+
+<!-- One-time credentials page. The welcome email links here with ?t=<token>; the token is never sent to analytics. -->
+<Base
+	title="Your login details | MyHostAdvantage"
+	description="Your WordPress login details."
+>
+	<meta name="robots" content="noindex" slot="head" />
+	<meta name="referrer" content="no-referrer" slot="head" />
+	<SiteHeader />
+
+	<main class="section">
+		<div class="container prose notice" id="creds">
+			<span class="eyebrow">Your new site</span>
+			<h1>Your WordPress login</h1>
+
+			<div data-state="ready">
+				<p class="lead">
+					For your security, these details can be shown <strong>only once</strong>. Have your password manager ready
+					before you continue.
+				</p>
+				<button class="btn btn-primary" type="button" id="reveal">Show my login details</button>
+			</div>
+
+			<div data-state="loading" hidden>
+				<p class="lead">Loading…</p>
+			</div>
+
+			<div data-state="shown" hidden>
+				<p class="lead">Save these now. This page won’t show them again.</p>
+				<dl class="cred-list">
+					<dt>Login page</dt>
+					<dd><a id="c-login" href="#" rel="noopener"></a></dd>
+					<dt>Username</dt>
+					<dd><code id="c-user"></code> <button class="copy" type="button" data-copy="c-user">Copy</button></dd>
+					<dt>Password</dt>
+					<dd><code id="c-pass"></code> <button class="copy" type="button" data-copy="c-pass">Copy</button></dd>
+				</dl>
+				<p>
+					After you log in, you can change your password under <strong>Users → Profile</strong> in WordPress.
+				</p>
+			</div>
+
+			<div data-state="gone" hidden>
+				<p class="lead">
+					This link has already been used or has expired. Reply to your welcome email and we’ll send you a new one.
+				</p>
+			</div>
+
+			<div data-state="error" hidden>
+				<p class="lead">Something went wrong loading your details. Please try again in a moment.</p>
+			</div>
+		</div>
+	</main>
+
+	<SiteFooter />
+</Base>
+
+<script>
+	import { FUNCTIONS_URL } from '../../config';
+
+	const root = document.getElementById('creds') as HTMLElement;
+	const show = (state: string) =>
+		root.querySelectorAll<HTMLElement>('[data-state]').forEach((el) => (el.hidden = el.dataset.state !== state));
+
+	// Read the token, then strip it from the address bar so it isn't left in history or shared by accident.
+	const token = new URLSearchParams(location.search).get('t') ?? '';
+	history.replaceState(null, '', location.pathname);
+	if (!token) show('gone');
+
+	document.getElementById('reveal')?.addEventListener('click', async () => {
+		show('loading');
+		try {
+			const response = await fetch(`${FUNCTIONS_URL}/mha-reveal-credentials`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ token }),
+			});
+			if (response.status === 404 || response.status === 410) return show('gone');
+			if (!response.ok) throw new Error(`Reveal failed: ${response.status}`);
+
+			const { login_url, username, password } = await response.json();
+			const link = document.getElementById('c-login') as HTMLAnchorElement;
+			link.href = login_url;
+			link.textContent = login_url;
+			(document.getElementById('c-user') as HTMLElement).textContent = username;
+			(document.getElementById('c-pass') as HTMLElement).textContent = password;
+			show('shown');
+		} catch (error) {
+			console.error(error);
+			show('error');
+		}
+	});
+
+	root.querySelectorAll<HTMLButtonElement>('button.copy').forEach((button) => {
+		button.addEventListener('click', async () => {
+			const text = document.getElementById(button.dataset.copy ?? '')?.textContent ?? '';
+			await navigator.clipboard.writeText(text);
+			button.textContent = 'Copied';
+			setTimeout(() => (button.textContent = 'Copy'), 1500);
+		});
+	});
+</script>

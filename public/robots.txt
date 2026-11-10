@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://myhostadvantage.com/sitemap-index.xml

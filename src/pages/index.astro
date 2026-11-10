@@ -1,0 +1,305 @@
+---
+import Base from '../layouts/Base.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import Canyon from '../components/Canyon.astro';
+import SignupForm from '../components/SignupForm.astro';
+import { plan } from '../plans';
+import { SIGNUPS_OPEN } from '../config';
+
+const features = [
+	{
+		title: 'Live in minutes',
+		body: 'Sign up and your new WordPress site is created right away. Your login arrives by email, usually within a few minutes.',
+		icon: 'M13 2 4 14h7l-1 8 9-12h-7Z',
+	},
+	{
+		title: 'Fast and secure',
+		body: 'A global content delivery network, a web application firewall and an SSL certificate come standard, so your site loads quickly and stays protected.',
+		icon: 'M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6Z M9 12l2 2 4-4',
+	},
+	{
+		title: 'Uptime monitoring',
+		body: 'We check your site around the clock. If it goes down, we’re alerted right away and on it, often before you’d ever notice.',
+		icon: 'M3 12h4l3-8 4 16 3-8h4',
+	},
+	{
+		title: 'Daily backups',
+		body: 'Your site is backed up every day and each backup is kept for 30 days, so a mistake or a bad plugin update is easy to undo.',
+		icon: 'M12 3c4.4 0 8 1.3 8 3s-3.6 3-8 3-8-1.3-8-3 3.6-3 8-3ZM4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6',
+	},
+	{
+		title: 'Free migration',
+		body: 'Already have a WordPress site somewhere else? We move it over for you at no charge and tell you when it’s safe to switch.',
+		icon: 'M4 7h13l-3-3M20 17H7l3 3',
+	},
+	{
+		title: 'Help from real people',
+		body: 'Hosting, domain and login questions go to a small team that knows your account. We’ll help you connect your domain and get settled.',
+		icon: 'M4 5h16v11H8l-4 4ZM8 9h8M8 12h5',
+	},
+];
+
+const audiences = [
+	'Local service businesses: contractors, salons, clinics and shops',
+	'Restaurants, studios and retailers that need a site customers can find',
+	'Consultants, agencies and professional practices',
+	'Owners who want their website handled, not another thing to manage',
+];
+
+const steps = [
+	{
+		title: 'Sign up',
+		body: 'Tell us about your business, choose monthly or yearly billing, and check out securely by card.',
+	},
+	{
+		title: 'Get your login',
+		body: 'We create your WordPress site immediately and email you a secure link to your login details.',
+	},
+	{
+		title: 'Connect your domain',
+		body: 'Tell us your domain and we’ll send the exact DNS settings to use. Moving an existing site? We do it for you, free.',
+	},
+	{
+		title: 'Run your business',
+		body: 'We keep the site fast, secure, backed up and monitored. Billing is automatic, and you can update your card or cancel any time.',
+	},
+];
+
+const faqs = [
+	{
+		q: 'How fast will my site be ready?',
+		a: 'Your WordPress site is created as soon as your payment goes through, and your login email usually arrives within a few minutes. You can start building right away on a temporary preview address, then connect your domain when you’re ready.',
+	},
+	{
+		q: 'Do I need a domain name?',
+		a: 'Not to get started. You’ll get a preview address to build on. When you’re ready to go live, connect a domain you own and we’ll send you the DNS settings to use. We don’t sell domains, so if you need one, register it with any domain registrar.',
+	},
+	{
+		q: 'Can you move my existing WordPress site?',
+		a: 'Yes, and it’s free. We copy everything over, check it, and tell you when it’s safe to switch your domain, so there’s no downtime.',
+	},
+	{
+		q: 'How does billing work?',
+		a: `It’s one plan: $${plan.monthly} a month, or $${plan.yearly} a year (two months free). You pay by card at sign-up, then automatically each month or year. Payments are processed securely by Stripe, and you’ll get a receipt by email each time.`,
+	},
+	{
+		q: 'Can I cancel or switch to yearly billing?',
+		a: 'Yes, any time. Use the billing link in your welcome email to update your card, switch between monthly and yearly, or cancel. If you cancel, your site stays online until the end of the period you’ve paid for, and we can give you a full copy of your site to take with you.',
+	},
+	{
+		q: 'Will you make changes to my website for me?',
+		a: 'Hosting covers keeping your site online, fast, secure and backed up, plus help with hosting, domain and login questions. You make your own content and design changes in WordPress, or hire anyone you like to do it. If you’d like us to handle edits and updates, ask about our website care retainer.',
+	},
+	{
+		q: 'Can I install any plugin or theme?',
+		a: 'Almost any. You get full WordPress admin access. A small number of plugins that duplicate built-in features (like caching or backups) or that slow sites down aren’t needed and may be blocked, and we’ll suggest an alternative if so.',
+	},
+	{
+		q: 'What happens if my site outgrows the plan?',
+		a: 'The plan includes 10 GB of storage and 50 GB of bandwidth a month, which is plenty for most small business sites. If yours grows past that, we’ll reach out before anything is affected and talk through options. You won’t be cut off without warning.',
+	},
+];
+
+const iconProps = {
+	width: 24,
+	height: 24,
+	viewBox: '0 0 24 24',
+	fill: 'none',
+	stroke: 'currentColor',
+	'stroke-width': 1.8,
+	'stroke-linecap': 'round',
+	'stroke-linejoin': 'round',
+};
+---
+
+<Base
+	title="MyHostAdvantage | Managed WordPress hosting for small business"
+	description={`Fast, secure managed WordPress hosting for small businesses. One plan, $${plan.monthly} a month: your site is ready in minutes, with daily backups, uptime monitoring, SSL, CDN, firewall and free migration included.`}
+>
+	<SiteHeader />
+
+	<main>
+		<section class="hero">
+			<div class="container hero-body">
+				<span class="eyebrow">Managed WordPress hosting for small business</span>
+				<h1>Your WordPress site, <em>handled.</em></h1>
+				<p>
+					Fast, secure hosting with daily backups, uptime monitoring, SSL and a firewall built in. Sign up and your new
+					site is ready in minutes, so you can get back to running your business.
+				</p>
+				<div class="hero-actions">
+					<a class="btn btn-primary" href="#signup">Get started</a>
+					<a class="btn btn-ghost" href="#pricing">See pricing</a>
+				</div>
+				<p class="hero-note">One plan, <strong>${plan.monthly}/month</strong>. Everything included. Cancel any time.</p>
+			</div>
+			<Canyon />
+		</section>
+
+		<section class="section" id="features">
+			<div class="container">
+				<div class="section-head">
+					<span class="eyebrow">Features</span>
+					<h2>Everything your website needs to stay fast and safe</h2>
+					<p class="lead">
+						No control panels to learn and no surprise upsells. We take care of the hosting so your site just works.
+					</p>
+				</div>
+				<div class="cards">
+					{
+						features.map((f) => (
+							<div class="card">
+								<div class="icon-badge" aria-hidden="true">
+									<svg {...iconProps}>
+										<path d={f.icon} />
+									</svg>
+								</div>
+								<h3>{f.title}</h3>
+								<p>{f.body}</p>
+							</div>
+						))
+					}
+				</div>
+			</div>
+		</section>
+
+		<section class="section section-soft">
+			<div class="container split">
+				<div>
+					<span class="eyebrow">Who it’s for</span>
+					<h2>Built for businesses that depend on their website.</h2>
+					<p class="lead">
+						Your website is often the first impression a customer gets. It should load fast, stay secure and never be
+						the reason someone calls a competitor.
+					</p>
+				</div>
+				<ul class="checklist" role="list">
+					{audiences.map((a) => <li>{a}</li>)}
+				</ul>
+			</div>
+		</section>
+
+		<section class="section" id="pricing">
+			<div class="container">
+				<div class="section-head center">
+					<span class="eyebrow">Pricing</span>
+					<h2>One plan. One price. Everything included.</h2>
+					<p class="lead">No tiers to compare and no add-ons to decode. Pay yearly and get two months free.</p>
+				</div>
+				<div class="billing-toggle" role="radiogroup" aria-label="Billing period">
+					<button type="button" role="radio" aria-checked="true" data-interval="month">Monthly</button>
+					<button type="button" role="radio" aria-checked="false" data-interval="year">
+						Yearly <span class="save">2 months free</span>
+					</button>
+				</div>
+				<div class="plans single">
+					<div class="plan featured">
+						<h3>{plan.name}</h3>
+						<p class="plan-price">
+							<span class="amount" data-month={`$${plan.monthly}`} data-year={`$${plan.yearly}`}>${plan.monthly}</span>
+							<span class="per" data-month="/month" data-year="/year">/month</span>
+						</p>
+						<p class="plan-blurb">{plan.blurb}</p>
+						<ul role="list">
+							{
+								plan.features.map((f) => (
+									<li>
+										<span>{f.label}</span>
+										<span class="detail">{f.detail}</span>
+									</li>
+								))
+							}
+						</ul>
+						<a class="btn btn-primary" href="#signup" id="choose-plan">Get started</a>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="section section-soft" id="how">
+			<div class="container">
+				<div class="section-head">
+					<span class="eyebrow">How it works</span>
+					<h2>From sign-up to live site, fast</h2>
+				</div>
+				<ol class="steps" role="list">
+					{
+						steps.map((s, i) => (
+							<li class="step">
+								<span class="step-num">{i + 1}</span>
+								<h3>{s.title}</h3>
+								<p>{s.body}</p>
+							</li>
+						))
+					}
+				</ol>
+			</div>
+		</section>
+
+		<section class="section" id="faq">
+			<div class="container">
+				<div class="section-head">
+					<span class="eyebrow">Questions</span>
+					<h2>Frequently asked questions</h2>
+				</div>
+				<div class="faq">
+					{
+						faqs.map((f) => (
+							<details>
+								<summary>{f.q}</summary>
+								<p>{f.a}</p>
+							</details>
+						))
+					}
+				</div>
+			</div>
+		</section>
+
+		<section class="section cta" id="signup">
+			<div class="container">
+				<span class="eyebrow">Get started</span>
+				<h2>Set up your WordPress site</h2>
+				{
+					SIGNUPS_OPEN ? (
+						<>
+							<p class="lead">
+								Tell us a little about your business and choose how you’d like to pay. After checkout, your site is
+								created automatically and your login is on its way.
+							</p>
+							<SignupForm />
+						</>
+					) : (
+						<div class="signup-soon">
+							<p class="lead">
+								We’re putting the finishing touches on online sign-up. It opens soon. Check back shortly to get your
+								WordPress site set up in minutes.
+							</p>
+						</div>
+					)
+				}
+			</div>
+		</section>
+	</main>
+
+	<SiteFooter />
+</Base>
+
+<script>
+	// Monthly/yearly toggle on the pricing card; the choice carries over to the sign-up form.
+	let interval: 'month' | 'year' = 'month';
+	const toggles = document.querySelectorAll<HTMLButtonElement>('.billing-toggle button');
+	toggles.forEach((button) => {
+		button.addEventListener('click', () => {
+			interval = button.dataset.interval as 'month' | 'year';
+			toggles.forEach((b) => b.setAttribute('aria-checked', String(b === button)));
+			document.querySelectorAll<HTMLElement>('.plan-price [data-month]').forEach((el) => {
+				el.textContent = (interval === 'year' ? el.dataset.year : el.dataset.month) ?? '';
+			});
+		});
+	});
+
+	document.getElementById('choose-plan')?.addEventListener('click', () => {
+		document.dispatchEvent(new CustomEvent('mha:choose-interval', { detail: { interval } }));
+	});
+</script>

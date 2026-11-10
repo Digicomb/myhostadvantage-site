@@ -1,0 +1,35 @@
+---
+import Base from '../../layouts/Base.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+---
+
+<!-- Stripe Checkout returns here after a successful payment. -->
+<Base
+	title="Welcome | MyHostAdvantage"
+	description="Thanks for signing up. Your WordPress site is being created."
+>
+	<meta name="robots" content="noindex" slot="head" />
+	<SiteHeader />
+
+	<main class="section">
+		<div class="container prose notice">
+			<span class="eyebrow">Payment received</span>
+			<h1>Thanks! Your site is on its way.</h1>
+			<p class="lead">
+				We’re creating your WordPress site now. In a few minutes you’ll get an email with a secure link to your login
+				details.
+			</p>
+			<h2>What happens next</h2>
+			<ol class="next-steps">
+				<li><strong>Check your inbox.</strong> Your welcome email comes from MyHostAdvantage. If you don’t see it within 15 minutes, check your spam folder.</li>
+				<li><strong>Open your secure login link.</strong> It shows your WordPress username and password once, so save them in your password manager.</li>
+				<li><strong>Connect your domain.</strong> If you gave us a domain, the email includes the DNS settings to add at your registrar.</li>
+			</ol>
+			<p>Your Stripe receipt is in your inbox too.</p>
+			<p><a class="btn btn-outline" href="/">Back to home</a></p>
+		</div>
+	</main>
+
+	<SiteFooter />
+</Base>

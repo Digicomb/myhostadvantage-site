@@ -1,0 +1,20 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/logo.svg';
+---
+
+<header class="site-header">
+	<div class="container">
+		<a class="brand" href="/">
+			<Image src={logo} alt="" width={36} height={36} />
+			<span>My<strong>Host</strong>Advantage</span>
+		</a>
+		<nav class="nav" aria-label="Main">
+			<a href="/#features">Features</a>
+			<a href="/#pricing">Pricing</a>
+			<a href="/#how">How it works</a>
+			<a href="/#faq">FAQ</a>
+			<a class="btn btn-primary" href="/#signup"><span class="nav-long">Get </span>started</a>
+		</nav>
+	</div>
+</header>
